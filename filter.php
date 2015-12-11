@@ -1,0 +1,1289 @@
+<html>  
+<head>    
+    <title>Twitter Analysis | Raw Tweet Selection</title>
+    <script type="text/javascript" src="jquery-1.11.3.js"></script>
+	<script type="text/javascript" src="jquery.tabletojson.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="css/font-awesome.css" rel="stylesheet" type="text/css">
+	<link href="css/card.css" rel="stylesheet" type="text/css">
+	<link href="css/style.css" rel="stylesheet" type="text/css">
+	<style>
+		h3, h4, h5 {
+		   border: none;
+		}
+		
+		.modal-dialog
+		{
+			width: 600px;
+		}
+		.bg-orange
+		{
+			background-color: #70B9B0;
+		}
+
+		.bs-callout+.bs-callout {
+			margin-top: -5px;
+		}
+		.bs-callout-info {
+			border-left-color: #1b809e;
+		}
+		.bs-callout {
+			padding: 20px;
+			margin: 20px 0;
+			border: 1px solid #eee;
+			border-left-width: 5px;
+			border-radius: 3px;
+		}
+		.btn-default
+		{
+			background-color:#ccc;
+			color:#fff;
+			border-color:transparent;
+		}
+		.btn-warning
+		{
+			color:#fff;
+		}
+		*{
+			color:grey;
+			font-family: 'Lato', sans-serif;
+		}
+
+		input[type=text],
+		input[type=text]:hover,
+		input[type=text]:focus,
+		input[type=text]:active
+		{
+			color:grey;
+			border: 0;
+			outline: none;
+			outline-offset: 0;
+		}
+		.btn-file {
+			position: relative;
+			overflow: hidden;
+		}
+		.btn-file input[type=file] {
+			position: absolute;
+			top: 0;
+			right: 0;
+			min-width: 100%;
+			min-height: 100%;
+			font-size: 100px;
+			text-align: right;
+			filter: alpha(opacity=0);
+			opacity: 0;
+			outline: none;
+			background: white;
+			cursor: inherit;
+			dislay: block;
+		}
+		.checkbox label:after, 
+		.radio label:after {
+		    content: '';
+		    display: table;
+		    clear: both;
+		}
+
+		.checkbox .cr,
+		.radio .cr {
+		    position: relative;
+		    display: inline-block;
+		    border: 1px solid #a9a9a9;
+		    border-radius: .25em;
+		    width: 1.3em;
+		    height: 1.3em;
+		    float: left;
+		    margin-right: .5em;
+		}
+
+		.radio .cr {
+		    border-radius: 50%;
+		}
+
+		.checkbox .cr .cr-icon,
+		.radio .cr .cr-icon {
+		    position: absolute;
+		    font-size: .8em;
+		    line-height: 0;
+		    top: 50%;
+		    left: 20%;
+		}
+
+		.radio .cr .cr-icon {
+		    margin-left: 0.04em;
+		}
+
+		.checkbox label input[type="checkbox"],
+		.radio label input[type="radio"] {
+		    display: none;
+		}
+
+		.checkbox label input[type="checkbox"] + .cr > .cr-icon,
+		.radio label input[type="radio"] + .cr > .cr-icon {
+		    transform: scale(3) rotateZ(-20deg);
+		    opacity: 0;
+		    transition: all .3s ease-in;
+		}
+
+		.checkbox label input[type="checkbox"]:checked + .cr > .cr-icon,
+		.radio label input[type="radio"]:checked + .cr > .cr-icon {
+		    transform: scale(1) rotateZ(0deg);
+		    opacity: 1;
+		}
+
+		.checkbox label input[type="checkbox"]:disabled + .cr,
+		.radio label input[type="radio"]:disabled + .cr {
+		    opacity: .5;
+		}
+	</style>
+</head>
+<body>
+<?php 
+	parse_str($_SERVER["QUERY_STRING"], $query_array);
+	ini_set('max_execution_time', 3000000);
+?>
+	<section class="featured" style="padding:80px 0 40px">
+		<div class="container"> 
+			<div class="row mar-bot40">
+				<div class="col-md-6 col-md-offset-3">	
+					<div class="align-center">
+						<h2 class="slogan">Filtering Phase</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="section-services" class="section pad-bot30 bg-white">
+		<div class="container"> 
+			<h4>What will you do:</h4>
+			<ol>
+				<li>Remove the irrelevant tweets by keyword or phrase</li>
+				<li>Remove the tweets from specific source</li>
+				<li>Cleansing options
+					<ul>
+						<li>Remove numbers</li>
+						<li>Remove punctuation</li>
+						<li>Remove stopword</li>
+						<li>Remove URL</li>
+						<li>Normalizing the tweets</li>
+						<li>Highlight the specific word</li>
+					</ul>
+				</li>
+			</ol>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">&nbsp;</div>
+		<div class="container">
+			<h4>How to use</h4>
+			<p>This is an apps to exclude the raw tweets. Sample usage <code>uang,korupsi,jujur</code> note : Uppercase and lowercase doesn't matter. Use the textbox below</p>
+		</div>
+
+		<div class="row">&nbsp;</div>
+		<div class="row">&nbsp;</div>
+		<div class="container">
+			<form method="GET" action="filter.php?page=1">
+				<h4>Raw Tweet Selection</h4>
+				<p>What keyword/phrase do you want to exclude</p>
+		
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" style="background-color:#fff;color:#000" type="button">Keyword/Phrase&nbsp;&nbsp;&nbsp;</button>
+					</span>
+					<input style="backround:transparent" type="text" name="query" class="form-control"  placeholder="<?php if(isset($query_array['query'])) echo $query_array['query']; else echo "Exclude..."; ?>" 
+					value="<?php if(isset($query_array['query'])) echo $query_array['query']; else echo ""?>">
+				</div>
+				<div class="row">&nbsp;</div>
+				<p>And now check the tweet's source, some of them might be autogenerated, so you have to exclude them. i.e <code>IFTTT,twitterfeed,twittbot</code></p>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" style="background-color:#fff;color:#000" type="button">Exclude tweets from&nbsp;</button>
+					</span>
+					<input type="text" name="source" class="form-control"  placeholder="<?php if(isset($query_array['source'])) echo $query_array['source']; else echo "Banned the source"; ?>" 
+					value="<?php if(isset($query_array['source'])) echo $query_array['source']; ?>">
+				</div>
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<h4>Cleansing Tools</h4>
+				<p>After you select the tweets, some of them might be containing unused words to be analyzed, and also some character you don't want to analyze.</p>
+
+				<div style="float:left">
+					<div class="checkbox">
+			          <label  style="font-size: 1.5em">
+			           	<input type="checkbox" name="numbers" <?php if(isset($query_array['numbers'])) echo 'checked=true'; else echo ''; ?>>
+			            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+			            <a style="text-decoration:none" data-toggle="modal" data-target="#modnumbers">Numbers </a>
+			          </label>
+			        </div>
+				</div>
+
+				<div style="float:left">
+					<div class="checkbox">
+			          <label  style="font-size: 1.5em">
+			           	<input type="checkbox" name="punctuation" <?php if(isset($query_array['punctuation'])) echo 'checked=true'; else echo ''; ?>>
+			            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+			            <a style="text-decoration:none" data-toggle="modal" data-target="#modpunctuation">Punctuation </a>
+			          </label>
+			        </div>
+				</div>
+				<div style="float:left">
+					<div class="checkbox">
+			          <label  style="font-size: 1.5em">
+			           	<input type="checkbox" name="stopword" <?php if(isset($query_array['stopword'])) echo 'checked=true'; else echo ''; ?>>
+			            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+			            <a style="text-decoration:none" data-toggle="modal" data-target="#modstopword">Stopword </a>
+			          </label>
+			        </div>
+				</div>
+				<div style="float:left">
+					<div class="checkbox">
+			          <label  style="font-size: 1.5em">
+			           	<input type="checkbox" name="normalize" <?php if(isset($query_array['normalize'])) echo 'checked=true'; else echo ''; ?>>
+			            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+			            <a style="text-decoration:none" data-toggle="modal" data-target="#modnormalize">Normalize </a>
+			          </label>
+			        </div>
+				</div>
+				<div style="float:left">
+					<div class="checkbox">
+			          <label  style="font-size: 1.5em">
+			           	<input type="checkbox" name="lowercase" <?php if(isset($query_array['lowercase'])) echo 'checked=true'; else echo ''; ?>>
+			            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+			            Lowercase
+			          </label>
+			        </div>
+				</div>
+				<div style="float:left">
+					<div class="checkbox">
+			          <label  style="font-size: 1.5em">
+			           	<input type="checkbox" name="url" <?php if(isset($query_array['url'])) echo 'checked=true'; else echo ''; ?>>
+			            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+			            URL
+			          </label>
+			        </div>
+				</div>
+				<div style="float:left">
+					<div class="checkbox">
+			          <label  style="font-size: 1.5em">
+			           	<input type="checkbox" name="highlight" <?php if(isset($query_array['highlight'])) echo 'checked=true'; else echo ''; ?>>
+			            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+			            <a style="text-decoration:none" data-toggle="modal" data-target="#modhighlight">Highlight </a>
+			          </label>
+			        </div>
+				</div>
+				
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<h4>Choosing the Topic</h4>
+				<p>We stored some topics in our database, so select one of them to be loaded.</p>
+
+				<div class="input-group">
+					<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" style="background-color:#fff;color:#000" type="button">Which topics&nbsp;</button>
+					</span>
+					<input type="text" name="tracker" class="form-control"  placeholder="<?php if(isset($query_array['tracker'])) echo $query_array['tracker']; else echo "topics"; ?>" 
+					value="<?php if(isset($query_array['tracker'])) echo $query_array['tracker']; ?>">
+					</div>
+				</div>
+				<div>
+					<input type="hidden" name="page" value="<?php if(isset($query_array['page'])) echo $query_array['page']; else echo 1;?>"/>					
+					<input type="submit" name="ready" id="gen" class="btn btn-primary pull-right" style="margin-right:1%" value="I'm ready" />
+					<?php 
+						if(isset($query_array['ready']))
+						{
+							echo '<input type="submit" name="sclean" class="btn btn-success pull-right" style="margin-right:1%" value="Save Clean Tweets" />';	
+						}
+					?>
+				</div>
+			</form>	
+		<div class="row">&nbsp;</div>
+		<div class="row">&nbsp;</div>
+
+		<h4>List of Tweets</h4>
+		<p>Here is the tweets loaded from the information you gave.</p>
+		<a style="text-decoration:none;" data-toggle="modal" data-target="#moddistribution"> <button class="pull-right btn btn-danger">Generate Distribution</button></a>
+		<?php 
+		if(isset($_POST['bykfold']) || isset($_POST['bydate']))
+		{
+		?>
+			<a style="text-decoration:none;" href="http://localhost:8090/experiment/data/data_train/" target="_blank"> <button class="pull-right btn btn-warning">See training datasets</button></a>
+		<?php
+		}
+		?>
+		<div class="row">&nbsp;</div>
+		<div class="row">&nbsp;</div>
+
+		<div class="container">
+   		<div class="row">
+  				<?php
+					function call_curl($headers, $method, $url, $data)
+					{			
+						$handle = curl_init();
+						curl_setopt($handle, CURLOPT_URL, $url);
+						curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
+						curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+						#curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, false);
+						#curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
+						 
+						switch($method) {
+							case 'GET':
+								break;
+							case 'POST':
+								curl_setopt($handle, CURLOPT_POST, true);
+								curl_setopt($handle, CURLOPT_POSTFIELDS, $data);
+								break;
+							case 'PUT': 
+								curl_setopt($handle, CURLOPT_CUSTOMREQUEST, 'PUT');
+								curl_setopt($handle, CURLOPT_POSTFIELDS, $data);
+								break;
+							case 'DELETE':
+								curl_setopt($handle, CURLOPT_CUSTOMREQUEST, 'DELETE');
+								break;
+						}
+						
+						$response = curl_exec($handle);
+						$code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+						curl_close($handle);
+						print($code);
+						#print($response);
+						return $response;
+					}
+					
+					// write to file
+					if(isset($_POST['punctuation_wr']))
+					{
+						$myfile = fopen("data/punctuation.txt", "w") or die("Unable to open file!");
+						$txt = $_POST['punctuation_wr'];
+						fwrite($myfile, $txt);
+						fclose($myfile);
+					}else if(isset($_POST['numbers_wr']))
+					{
+						$myfile = fopen("data/numbers.txt", "w") or die("Unable to open file!");
+						$txt = $_POST['numbers_wr'];
+						fwrite($myfile, $txt);
+						fclose($myfile);
+					}else if(isset($_POST['stopword_wr']))
+					{
+						$myfile = fopen("data/stopword.txt", "w") or die("Unable to open file!");
+						$txt = $_POST['stopword_wr'];
+						fwrite($myfile, $txt);
+						fclose($myfile);
+					}else if(isset($_POST['normalize_wr']))
+					{
+						$myfile = fopen("data/normalize.txt", "w") or die("Unable to open file!");
+						$txt = $_POST['normalize_wr'];
+						fwrite($myfile, $txt);
+						fclose($myfile);
+					}else if(isset($_POST['highlight_wr']))
+					{
+						$myfile = fopen("data/highlight.txt", "w") or die("Unable to open file!");
+						$txt = $_POST['highlight_wr'];
+						fwrite($myfile, $txt);
+						fclose($myfile);
+					}
+					
+					//read file
+					$punctuation_dict = array();
+					$normalize_dict = array();
+					$stopword_dict = array();
+					$numbers_dict = array();
+					$highlight_dict = array();
+					
+					
+					if(isset($query_array['highlight']))
+					{
+						$file = fopen("data/highlight.txt","r");
+						while(!feof($file))
+						{
+							$line=fgets($file);
+							$line_arr= explode(",",$line);
+							for($p=0; $p<count($line_arr); $p++)
+							{
+								$highlight_dict[$p] = $line_arr[$p];
+							}
+							#print_r($highlight);
+						}
+					}
+					
+					
+					$file = fopen("data/punctuation.txt","r");
+					while(!feof($file))
+					{
+						$line=fgets($file);
+						$line_arr= explode(",",$line);
+						for($p=0; $p<count($line_arr); $p++)
+						{
+							$punctuation_dict[$p] = $line_arr[$p];
+						}
+					}
+					fclose($file);
+					
+					$file = fopen("data/numbers.txt","r");
+					while(!feof($file))
+					{
+						$line=fgets($file);
+						$line_arr= explode(",",$line);
+						for($p=0; $p<count($line_arr); $p++)
+						{
+							$numbers_dict[$p] = $line_arr[$p];
+						}
+					}
+					fclose($file);
+					
+					$file = fopen("data/normalize.txt","r");
+					while(!feof($file))
+					{
+						$line=fgets($file);
+						$line_arr = explode(",",$line);
+						for($p=0; $p<count($line_arr); $p++)
+						{
+							$normalize_dict[$p] = $line_arr[$p];
+						}
+					}
+					#print_r($normalize_dict);
+					fclose($file);
+					
+					$file = fopen("data/stopword.txt","r");
+					while(!feof($file))
+					{
+						$line=fgets($file);
+						$line_arr= explode(",",$line);
+						for($p=0; $p<count($line_arr); $p++)
+						{
+							$stopword_dict[$p] = $line_arr[$p];
+						}
+					}
+					fclose($file);
+					
+					$file = fopen("data/highlight.txt","r");
+					while(!feof($file))
+					{
+						$line=fgets($file);
+						$line_arr= explode(",",$line);
+						for($p=0; $p<count($line_arr); $p++)
+						{
+							$highlight_dict[$p] = $line_arr[$p];
+						}
+					}
+					fclose($file);
+					
+					
+					$username = "root";
+					$password = "";
+					$hostname = "127.0.0.1"; 
+					$sql_dw = '';
+					if(isset($query_array['page']))
+					{
+						$curr_page = $query_array['page'];
+					}else
+					{
+						$curr_page = 1;
+					}
+					//connection to the database
+					$dbhandle = mysql_connect($hostname, $username, $password) 
+					 or die("Unable to connect to MySQL");
+					//echo "Connected to MySQL<br>";
+
+					//select a database to work with
+					$selected = mysql_select_db("datamining",$dbhandle) 
+					  or die("Could not select examples");
+					//execute the SQL query and return records
+					
+					
+					if(isset($_FILES['file_hadoop']))
+					{
+						$target_dir = "uploads/";
+						$target_file = $target_dir . basename($_FILES["file_hadoop"]["name"]);
+						$uploadOk = 1;
+						$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+						// Check if image file is a actual image or fake image
+						// Allow certain file formats
+						if($imageFileType != "txt" && $imageFileType != "json" && $imageFileType != "csv") {
+							echo "Sorry, only txt, json, csv files are allowed.";
+							$uploadOk = 0;
+						}
+						// Check if $uploadOk is set to 0 by an error
+						if ($uploadOk == 0) {
+							echo "Sorry, your file was not uploaded.";
+						// if everything is ok, try to upload file
+						} else {
+							if (move_uploaded_file($_FILES["file_hadoop"]["tmp_name"], $target_file)) {
+								echo "The file ". basename( $_FILES["file_hadoop"]["name"]). " has been uploaded.";
+								echo "Upload: " . $_FILES["file_hadoop"]["name"] . "<br />";
+								echo "Type: " . $_FILES["file_hadoop"]["type"] . "<br />";
+								echo "Size: " . ($_FILES["file_hadoop"]["size"] / 1024) . " Kb<br />";
+								echo "Stored in: " . $target_file;
+								$header = array("Content-Type: application/octet-stream");
+								$data = array();
+								$method = "PUT";
+								$url = "http://10.11.22.102:14000/webhdfs/v1/user/flume/filter/".basename($_FILES["file_hadoop"]["name"])."?op=CREATE&overwrite=true&blocksize=1048576&permission=777&buffersize=1024&user.name=flume"; 
+								print($url);
+								$call_1 = call_curl($header, $method, $url, $data);
+								print_r($call_1);
+								$data = "@c:/xampp/htdocs/experiment/".$target_file;
+								#print_r($data);
+								$call_2 = call_curl($header, $method, $url, $data);
+								print_r($call_2);
+								
+							} else {
+								echo "Sorry, there was an error uploading your file.";
+							}
+						}
+					}
+					
+					$sql = "select * from tweets ";
+					$sql_count = "select count(*) as semua from tweets ";					
+					$flagWhere = 0;
+					
+					if(isset($query_array['query']) && strlen($query_array['query']) > 0)
+					{
+						if($flagWhere == 0)
+						{
+							$sql .= " WHERE ";
+							$sql_count .= " WHERE ";
+							$flagWhere = 1;
+						}
+						
+						$arr_spl = explode(",", $query_array['query']);
+						for($p = 0; $p < count($arr_spl); $p++)
+						{
+							if($p > 0)
+							{
+								$sql .= " AND ";
+								$sql_count .= " AND ";
+							}
+							$sql .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+							$sql_count .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+							
+						}
+					}
+					
+					if(isset($query_array['source']) && strlen($query_array['source']) > 0)
+					{
+						if($flagWhere == 0)
+						{
+							$sql .= " WHERE ";
+							$sql_count .= " WHERE ";
+							$flagWhere = 1;
+						}
+						
+						$arr_spl = explode(",", $query_array['source']);
+						for($p = 0; $p < count($arr_spl); $p++)
+						{
+							if(isset($query_array['query']) && strlen($query_array['query']) > 0 
+								|| $p > 0)
+							{
+								$sql .= " AND ";
+								$sql_count .= " AND ";
+							}
+							
+							$sql .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+							$sql_count .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+						}
+					}
+					
+					if(isset($query_array['tracker']) && strlen($query_array['tracker']) > 0)
+					{
+						if($flagWhere == 0)
+						{
+							$sql .= " WHERE ";
+							$sql_count .= " WHERE ";
+							$flagWhere = 1;
+						}
+						
+						if(isset($query_array['source']) && strlen($query_array['source']) > 0 
+							|| isset($query_array['query']) && strlen($query_array['query']) > 0)
+							{
+								$sql .= " AND ";
+								$sql_count .= " AND ";
+							}
+						
+						$sql .= " tracker = '".trim($query_array['tracker'])."'";
+						$sql_count .= " tracker = '".trim($query_array['tracker'])."'";
+					}
+					
+					$sql_dw = $sql;
+					
+					$sql .= " limit ".(($curr_page-1)*100).",100";
+					//echo 'Easy it\'s not harmful, it\'s a debug mode (ask the programmer politely why this text is appearing): <br/> '.$sql;
+					
+					
+					$result = mysql_query($sql);
+					$count = mysql_query($sql_count);
+					//print_r($sql_count);
+					
+					$banyaknya = mysql_fetch_array($count)[0];
+					
+					// If the user press the save clean button
+					if(isset($_GET['sclean']) && isset($query_array['tracker']) && strlen($query_array['tracker']) > 0 )
+					{
+						$update_all_sql = "SELECT * FROM Tweets WHERE tracker='".$query_array['tracker']."'";
+						$result_update = mysql_query($update_all_sql);
+						
+						while ($row = mysql_fetch_array($result_update)) {
+						
+							$ctext = $row['text'];
+							if(isset($query_array['url']))
+							{
+								$regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@";
+								$ctext = preg_replace($regex, '', $ctext);
+							}
+							
+							if(isset($query_array['punctuation']))
+							{
+								$re = "/[";
+								for($p=0; $p<count($punctuation_dict); $p++)
+								{
+									$re .= $punctuation_dict[$p];
+								}
+								$re .= "]+/u";
+								$ctext = preg_replace($re, "", $ctext);
+								#$ctext = preg_replace("/(?![@#])\p{P}/u", "", $ctext);
+							}
+							
+							if(isset($query_array['numbers']))
+							{
+								$re = "/[";
+								for($p=0; $p<count($numbers_dict); $p++)
+								{
+									$re .= $numbers_dict[$p];
+								}
+								$re .= "]+/u";
+								$ctext = preg_replace($re, "", $ctext);
+								#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
+							}
+							
+							if(isset($query_array['stopword']))
+							{
+								$re = "/(";
+								for($p=0; $p<count($stopword_dict); $p++)
+								{
+									$re .= "\b".$stopword_dict[$p]."\b";
+									if($p < count($stopword_dict)-1)
+									{
+										$re .= "|";
+									}
+								}
+								$re .= ")/i";
+								#print($re);
+								$ctext = preg_replace($re, "", $ctext);
+								#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
+							}
+							
+							if(isset($query_array['normalize']))
+							{
+								
+								for($p=0; $p<count($normalize_dict); $p++)
+								{
+									$re = "/(";
+									$exp = explode("=", $normalize_dict[$p]);
+									#print_r($exp);
+									$re .= "\b".$exp[0]."\b";
+									$re .= ")/i";
+									$ctext = preg_replace($re, $exp[1], $ctext);
+								}
+								
+								#print($re);
+								
+								#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
+							}
+							
+							if(isset($query_array['lowercase']))
+							{
+								$ctext = strtolower($ctext);
+							}
+
+							$update_tc = "UPDATE tweets SET text_clean='".$ctext."' WHERE id='".$row['id']."'";
+							mysql_query($update_tc);
+						}
+
+						$if_sql = "SELECT (EXISTS(SELECT * FROM `cleanse_config` WHERE tracker='".$query_array['tracker']."')) as result";
+						$res_if_sql = mysql_query($if_sql);							
+						$row = mysql_fetch_array($res_if_sql);
+						print_r($row);
+						if($row[0] == 0)
+						{
+							print("<h1>HALO</h1>");
+							$insert_config = "INSERT INTO cleanse_config(numbers, punctuation, stopword, normalize, lowercase, url, tracker, keyword, source) 
+											VALUES('".((isset($query_array['numbers']) && strlen($query_array['numbers']) > 0)?'Y':'N')."',
+												   '".((isset($query_array['punctuation']) && strlen($query_array['punctuation']) > 0)?'Y':'N')."',
+												   '".((isset($query_array['stopword']) && strlen($query_array['stopword']) > 0)?'Y':'N')."',
+												   '".((isset($query_array['normalize']) && strlen($query_array['normalize']) > 0)?'Y':'N')."',
+												   '".((isset($query_array['lowercase']) && strlen($query_array['lowercase']) > 0)?'Y':'N')."',
+												   '".((isset($query_array['url']) && strlen($query_array['url']) > 0)?'Y':'N')."',
+												   '".((isset($query_array['tracker']) && strlen($query_array['tracker']) > 0)?$query_array['tracker']:'NOTRACKER')."',
+												   '".((isset($query_array['query']) && strlen($query_array['query']) > 0)?$query_array['query']:'')."',
+												   '".((isset($query_array['source']) && strlen($query_array['source']) > 0)?$query_array['source']:'')."')";
+							print($insert_config);
+							mysql_query($insert_config);
+						}else
+						{
+							$update_config = "UPDATE cleanse_config 
+											 SET numbers = '".((isset($query_array['numbers']) && strlen($query_array['numbers']) > 0)?'Y':'N')."',
+												 punctuation = '".((isset($query_array['punctuation']) && strlen($query_array['punctuation']) > 0)?'Y':'N')."',
+												 stopword =  '".((isset($query_array['stopword']) && strlen($query_array['stopword']) > 0)?'Y':'N')."',
+												 normalize = '".((isset($query_array['normalize']) && strlen($query_array['normalize']) > 0)?'Y':'N')."',
+												 lowercase = '".((isset($query_array['lowercase']) && strlen($query_array['lowercase']) > 0)?'Y':'N')."',
+												 url = '".((isset($query_array['url']) && strlen($query_array['url']) > 0)?'Y':'N')."',
+												 keyword =   '".((isset($query_array['query']) && strlen($query_array['query']) > 0)?$query_array['query']:'')."',
+												 source = '".((isset($query_array['source']) && strlen($query_array['source']) > 0)?$query_array['source']:'')."'
+												 WHERE tracker='".((isset($query_array['tracker']) && strlen($query_array['tracker']) > 0)?$query_array['tracker']:'NOTRACKER')."'";
+							print($update_config);
+							mysql_query($update_config);
+
+						}
+					}
+
+						 
+
+
+
+					$i = 0;
+					//fetch tha data from the database 
+					while ($row = mysql_fetch_array($result)) {
+						$i++;
+						
+						$ctext = $row['text'];
+						if(isset($query_array['url']))
+						{
+							$regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@";
+							$ctext = preg_replace($regex, '', $ctext);
+						}
+						
+						if(isset($query_array['punctuation']))
+						{
+							$re = "/[";
+							for($p=0; $p<count($punctuation_dict); $p++)
+							{
+								$re .= $punctuation_dict[$p];
+							}
+							$re .= "]+/u";
+							$ctext = preg_replace($re, "", $ctext);
+							#$ctext = preg_replace("/(?![@#])\p{P}/u", "", $ctext);
+						}
+						
+						if(isset($query_array['numbers']))
+						{
+							$re = "/[";
+							for($p=0; $p<count($numbers_dict); $p++)
+							{
+								$re .= $numbers_dict[$p];
+							}
+							$re .= "]+/u";
+							$ctext = preg_replace($re, "", $ctext);
+							#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
+						}
+						
+						if(isset($query_array['stopword']))
+						{
+							$re = "/(";
+							for($p=0; $p<count($stopword_dict); $p++)
+							{
+								$re .= "\b".$stopword_dict[$p]."\b";
+								if($p < count($stopword_dict)-1)
+								{
+									$re .= "|";
+								}
+							}
+							$re .= ")/i";
+							#print($re);
+							$ctext = preg_replace($re, "", $ctext);
+							#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
+						}
+						
+						if(isset($query_array['normalize']))
+						{
+							
+							for($p=0; $p<count($normalize_dict); $p++)
+							{
+								$re = "/(";
+								$exp = explode("=", $normalize_dict[$p]);
+								#print_r($exp);
+								$re .= "\b".$exp[0]."\b";
+								$re .= ")/i";
+								$ctext = preg_replace($re, $exp[1], $ctext);
+							}
+							
+							#print($re);
+							
+							#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
+						}
+						
+						if(isset($query_array['lowercase']))
+						{
+							$ctext = strtolower($ctext);
+						}
+
+						$ctext_tosave = $ctext;
+						
+						if(isset($query_array['highlight']))
+						{
+							for($p=0; $p<count($highlight_dict); $p++)
+							{
+								$re = "/(";
+								#print_r($exp);
+								$re .= "\b".$highlight_dict[$p]."\b";
+								$re .= ")/i";
+								#print($re);
+								$ctext = preg_replace($re, "<span class='btn btn-warning'>".$highlight_dict[$p]."</span>", $ctext);
+							}
+						}
+				?>
+				<div class="col-md-4 col-sm-6">
+			      	 <div class="panel panel-default">
+			           <div class="panel-heading"><a href="#" class="pull-right"><?php echo substr($row{'created_at'}, 0, 11); ?></a> <h4 style=" border: 0 solid #efefef;
+		    border-bottom-width: 1px;
+		    padding-bottom: 10px;"><?php echo $row{'name'}; ?> - <?php echo substr($row{'id'}, 0, 11); ?></h4>
+			           </div>
+			   			<div class="panel-body">
+			              <p><img src="<?php echo $row{'picture'}; ?>" class="img-circle pull-right"> <a href="#"><?php echo "@".$row{'screen_name'}; ?></a></p>
+			              <div class="clearfix"></div>
+			              <hr>
+			              <?php echo $row{'text'}; ?><br/>
+			              <div style=" border: 0 solid #efefef;border-bottom-width: 1px;margin-bottom:10px;padding-bottom: 10px;padding-top: 10px;">
+		    			  <?php echo $ctext; ?> <br/>
+						  </div>
+			              <?php echo $row{'source'}; ?> - <?php echo $row{'time_zone'}; ?></div>
+			              
+			         </div> 
+			    </div>
+				<?php
+					}
+					//close the connection
+					mysql_close($dbhandle);
+					
+					
+					if(isset($_POST['bykfold']))
+					{
+						print("TEST");
+						// Get Training Data
+						//clear all files
+						$files = glob('c:/xampp/htdocs/experiment/data/data_train/*'); // get all file names
+						foreach($files as $file){ // iterate files
+						  if(is_file($file))
+							unlink($file); // delete file
+						}		
+
+						#print_r($_POST['k-fold']);
+						if (isset($_POST['k-fold'])) {
+							$sql_dws = $sql_dw;
+							
+							for($p=1; $p<=$_POST['k-fold']; $p++)
+							{
+								$sql_dws .= " limit ".intval(($p-1)*($banyaknya/$_POST['k-fold'])).",".intval($banyaknya/$_POST['k-fold']);
+								#print($sql_dws);
+								$ch = curl_init(); 
+								print($sql_dws);
+								
+								//set the url, number of POST vars, POST data
+								curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/json_cleanse.php");
+								curl_setopt($ch,CURLOPT_POST, 1);
+								curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+								curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dws));
+								$result = curl_exec($ch);
+								
+								$file = fopen("data/data_train/train[".$p."].json","w");
+								fwrite($file,$result);
+								fclose($file);
+								curl_close($ch);
+								$ch = curl_init(); 
+
+								//set the url, number of POST vars, POST data
+								curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/csv_cleanse.php");
+								curl_setopt($ch,CURLOPT_POST, 1);
+								curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+								curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dws));
+								
+								$result = curl_exec($ch);
+								$file = fopen("data/data_train/train[".$p."].csv","w");
+								fwrite($file,$result);
+								fclose($file);
+								curl_close($ch);
+								
+								$sql_dws = $sql_dw;
+							}
+						}
+					}else if(isset($_POST['bydate']))
+					{
+						// Get Training Data
+						//clear all files
+						$files = glob('c:/xampp/htdocs/experiment/data/data_train/*'); // get all file names
+						foreach($files as $file){ // iterate files
+						  if(is_file($file))
+							unlink($file); // delete file
+						}		
+						
+						$dbhandle = mysql_connect($hostname, $username, $password) 
+						 or die("Unable to connect to MySQL");
+						//echo "Connected to MySQL<br>";
+
+						//select a database to work with
+						$selected = mysql_select_db("datamining",$dbhandle) 
+						  or die("Could not select examples");
+						$sql_dws = $sql_dw;
+						$sql_dws .= " GROUP BY created_at";
+						$sql_dws = mysql_query($sql_dws);
+						$sql_dwz = $sql_dw;
+						$p = 1;
+						while($rw = mysql_fetch_array($sql_dws))
+						{
+							$sql_dwz .=(($flagWhere==0)?" WHERE ":" AND "). "created_at ='".$rw['created_at']."' ";
+							$sql_dwz .= " limit ".($_POST['by-date']);
+							print($sql_dwz);
+							// to deactivate WHERE
+							
+							//request
+							$ch = curl_init(); 
+							curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/json_cleanse.php");
+							curl_setopt($ch,CURLOPT_POST, 1);
+							curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+							curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dwz));
+							$result = curl_exec($ch);
+							
+							$file = fopen("data/data_train/train[".$p."].json","w");
+							fwrite($file,$result);
+							fclose($file);
+							curl_close($ch);
+							$ch = curl_init(); 
+
+							//set the url, number of POST vars, POST data
+							curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/csv_cleanse.php");
+							curl_setopt($ch,CURLOPT_POST, 1);
+							curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+							curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dwz));
+							
+							$result = curl_exec($ch);
+							$file = fopen("data/data_train/train[".$p."].csv","w");
+							fwrite($file,$result);
+							fclose($file);
+							
+							//endrequest
+							curl_close($ch);
+							
+							
+							$sql_dwz = $sql_dw;
+							$p++;
+						}
+						mysql_close($dbhandle);
+					}
+					
+					
+				?>
+		 </div><!--/row-->
+		<div class="pull-right" style="display:inline">
+			<form action="csv_cleanse.php" style="float:left" target="_blank" method="post">
+				<input type="text" style="display:none" name="sql" value="<?php echo $sql_dw; ?>" />
+				<input type="text" style="display:none" name="attribute" value="<?php echo
+									(isset($query_array['punctuation'])?'punctuation':"")
+									.(isset($query_array['numbers'])? ',numbers':"")
+									.(isset($query_array['url'])? ',url':"")
+									.(isset($query_array['normalize'])? ',normalize':"")
+									.(isset($query_array['stopword'])? ',stopword':"")
+									.(isset($query_array['lowercase'])? ',lowercase':"")?>"/>				
+				<input type="submit" class='btn btn-success' value="Export to CSV &nbsp;" />
+			</form>
+			<form action="json_cleanse.php" style="float:left" target="_blank" method="post">
+				<input type="text" style="display:none" name="sql" value="<?php echo $sql_dw; ?>" />
+				<input type="text" style="display:none" name="attribute" value="<?php echo 
+									(isset($query_array['punctuation'])?'punctuation':"")
+									.(isset($query_array['numbers'])? ',numbers':"")
+									.(isset($query_array['url'])? ',url':"")
+									.(isset($query_array['normalize'])? ',normalize':"")
+									.(isset($query_array['stopword'])? ',stopword':"")
+									.(isset($query_array['lowercase'])? ',lowercase':"")?>"/>
+				<input type="submit" class='btn btn-warning' value="Export to JSON" />
+			</form>
+			<form id="hdfs" action="filter.php?tracker=<?php if(isset($query_array['tracker'])) echo $query_array['tracker'];?>" style="float:left" enctype="multipart/form-data" method="POST">
+				<span class="btn btn-primary btn-file">
+					Upload to HDFS <input name="file_hadoop" type="file">
+				</span>
+			</form>
+		</div>
+	
+		<div class="pull-left">
+			<h5><span style='background-color:grey;padding:1%;color:#fff;border-radius:5%'>Current page : <?php if(isset($query_array['page'])) echo $query_array['page']; else echo $curr_page; ?></span></h5>
+			<nav>
+			  <ul class="pagination">
+				<?php 
+					for($j=1; $j < (($banyaknya/100)+1); $j++)
+					{	
+						if(isset($query_array['tracker']) && isset($query_array['page']) && isset($query_array['query'])  && isset($query_array['source']) )
+							echo "<li><a href='filter.php?tracker=".$query_array['tracker']."&page=".$j."&source=".$query_array['source']."&query=".$query_array['query'].
+									(isset($query_array['highlight'])?'&highlight=Highlight+Mode':"")
+									.(isset($query_array['punctuation'])?'&punctuation=on':"")
+									.(isset($query_array['numbers'])? '&numbers=on':"")
+									.(isset($query_array['url'])? '&url=on':"")
+									.(isset($query_array['normalize'])? '&normalize=on':"")
+									.(isset($query_array['stopword'])? '&stopword=on':"")
+									.(isset($query_array['lowercase'])? '&lowercase=on':"")."'>".$j."</a></li>";
+						else
+							echo "<li><a href='filter.php?page=".$j.
+									(isset($query_array['highlight'])?'&highlight=Highlight%20Mode':"")
+									.(isset($query_array['punctuation'])?'&punctuation=on':"")
+									.(isset($query_array['numbers'])? '&numbers=on':"")
+									.(isset($query_array['url'])? '&url=on':"")
+									.(isset($query_array['normalize'])? '&normalize=on':"")
+									.(isset($query_array['stopword'])? '&stopword=on':"")
+									.(isset($query_array['lowercase'])? '&lowercase=on':"")."'>".$j.
+						"</a></li>";
+					}
+				?>
+			  </ul>
+			</nav>
+		</div>	
+	</section>
+	
+		<!----- MODAL PUNCTUATION ---->
+		<!-- Modal -->
+		<form action="filter.php" method="POST">
+		<div class="modal fade" id="modpunctuation" tabindex="-1" role="dialog" aria-labelledby="modpunctuation">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="modpunctuation">Punctuation Attribute</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Please specify the punctuation you want to exclude. <code>COMMA SEPARATED</code></p>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Without&nbsp;&nbsp;&nbsp;</button>
+					</span>
+					<input style="backround:transparent" type="text" name="punctuation_wr" class="form-control"  placeholder="Exclude..." 
+						value="<?php 
+								for($p=0; $p<count($punctuation_dict); $p++)
+								{
+									echo $punctuation_dict[$p];
+									if($p < count($punctuation_dict)-1)
+									{
+										echo ",";
+									}
+								}
+						?>">
+				</div>
+				</textarea>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<input type="submit" class="btn btn-primary" value="Save changes">
+			  </div>
+			</div>
+		  </div>
+		</div>
+		</form>
+		<!-- END PUNCTUATION -->
+		
+		<!----- MODAL Numbers ---->
+		<!-- Modal -->
+		<form action="filter.php" method="POST">
+		<div class="modal fade" id="modnumbers" tabindex="-1" role="dialog" aria-labelledby="modnumbers">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="modnumbers">Numbers Attribute</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Please specify the numbers you want to exclude. <code>COMMA SEPARATED</code></p>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Without&nbsp;&nbsp;&nbsp;</button>
+					</span>
+					<input style="backround:transparent" type="text" name="numbers_wr" class="form-control"  placeholder="Exclude .." 
+						value="<?php 
+								for($p=0; $p<count($numbers_dict); $p++)
+								{
+									echo $numbers_dict[$p];
+									if($p < count($numbers_dict)-1)
+									{
+										echo ",";
+									}
+								}
+						?>">
+				</div>
+				</textarea>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<input type="submit" class="btn btn-primary" value="Save changes" />
+			  </div>
+			</div>
+		  </div>
+		</div>
+		</form>
+		<!-- END Numbers -->
+		
+		<!----- MODAL Stopword ---->
+		<!-- Modal -->
+		<form action="filter.php" method="POST">
+		<div class="modal fade" id="modstopword" tabindex="-1" role="dialog" aria-labelledby="modstopword">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="modstopword">Stopword Attribute</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Please specify the stopword you want to exclude. <code>COMMA SEPARATED</code></p>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Without&nbsp;&nbsp;&nbsp;</button>
+					</span>
+					<input style="backround:transparent" type="text" name="stopword_wr" class="form-control"  placeholder="Exclude .." 
+						value="<?php 
+								for($p=0; $p<count($stopword_dict); $p++)
+								{
+									echo $stopword_dict[$p];
+									if($p < count($stopword_dict)-1)
+									{
+										echo ",";
+									}
+								}
+						?>">
+				</div>
+				</textarea>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<input type="submit" class="btn btn-primary" value="Save changes" />
+			  </div>
+			</div>
+		  </div>
+		</div>
+		</form>
+		<!-- END Stopword -->
+		
+		<!----- MODAL Normalize ---->
+		<!-- Modal -->
+		<form action="filter.php" method="POST">
+		<div class="modal fade" id="modnormalize" tabindex="-1" role="dialog" aria-labelledby="modnormalize">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="modnormalize">Normalize Attribute</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Please specify the stopword you want to exclude. <code>COMMA SEPARATED</code></p>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Without&nbsp;&nbsp;&nbsp;</button>
+					</span>
+					<input style="backround:transparent" type="text" name="normalize_wr" class="form-control"  placeholder="Exclude .." 
+						value="<?php 
+								for($p=0; $p<count($normalize_dict); $p++)
+								{
+									echo $normalize_dict[$p];
+									if($p < count($normalize_dict)-1)
+									{
+										echo ",";
+									}
+								}
+						?>">
+				</div>
+				</textarea>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<input type="submit" class="btn btn-primary" value="Save changes" />
+			  </div>
+			</div>
+		  </div>
+		</div>
+		</form>
+		<!-- END Normalize -->
+		
+		<!----- MODAL Highlight ---->
+		<!-- Modal -->
+		<form action="filter.php" method="POST">
+		<div class="modal fade" id="modhighlight" tabindex="-1" role="dialog" aria-labelledby="modhighlight">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="modhighlight">Highlight Attribute</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Please specify the highlight you want to include. <code>COMMA SEPARATED</code></p>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Set&nbsp;&nbsp;&nbsp;</button>
+					</span>
+					<input style="backround:transparent" type="text" name="highlight_wr" class="form-control"  placeholder="Exclude .." 
+						value="<?php 
+								for($p=0; $p<count($highlight_dict); $p++)
+								{
+									echo $highlight_dict[$p];
+									if($p < count($highlight_dict)-1)
+									{
+										echo ",";
+									}
+								}
+						?>">
+				</div>
+				</textarea>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<input type="submit" class="btn btn-primary" value="Save changes" />
+			  </div>
+			</div>
+		  </div>
+		</div>
+		</form>
+		<!-- END Highlight -->
+		
+		
+		<!----- MODAL Distribution ---->
+		<!-- Modal -->
+		<form action="filter.php" method="POST">
+		<div class="modal fade" id="moddistribution" tabindex="-1" role="dialog" aria-labelledby="moddistribution">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="moddistribution">Generate Distribution for Test Set</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Please specify the method you want to use to get the test set</p>
+				<div class="btn-group" data-toggle="buttons">
+					<label class="btn active">
+						<input type="radio" name="bykfold" value="bykfold" > <i>k-</i>fold
+						&nbsp;&nbsp;&nbsp;<input type="text" name="k-fold" />
+					</label>
+					<label class="btn">
+						<input type="radio" name="bydate" value="bydate" > separate by date&nbsp;&nbsp;
+						<input type="text" name="by-date" />
+					</label>
+				</div>
+				
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<input type="submit" class="btn btn-primary" value="Generate" />
+			  </div>
+			</div>
+		  </div>
+		</div>
+		</form>
+		<!-- END End Distribution -->
+		
+	</div>
+	</body>
+<script type="text/javascript">
+	$(document).ready( function() {
+		$('.btn-file :file').on('fileselect', function(event, numFiles, label, input) {
+			$("#hdfs").submit();
+		});
+});
+
+$(document).on('change', '.btn-file :file', function() {
+    var input = $(this),
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label, input]);
+});
+</script>
+</html>

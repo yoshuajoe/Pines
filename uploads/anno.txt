@@ -1,0 +1,4 @@
+Halo=OTHER nama=OTHER saya=OTHER Yoshua=PER
+Yoshua=PER sangat=OTHER suka=OTHER bermain=OTHER di=OTHER London=LOC
+hanya=OTHER butuh=OTHER sedikit=OTHER usaha=OTHER untuk=OTHER bepergian=OTHER
+namun=OTHER jangan=OTHER pernah=OTHER lupakan=OTHER kesehatan=OTHER
