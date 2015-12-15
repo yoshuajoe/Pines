@@ -303,12 +303,37 @@
 
 		<h4>List of Tweets</h4>
 		<p>Here is the tweets loaded from the information you gave.</p>
+		<h4>View Mode</h4>
+		<div style="display:inline">
+			<form method="GET" action="filter.php" style="float:left">
+				<button type="submit" name="view" value="tabular" class="btn <?php
+						if(isset($query_array['view']) && $query_array['view'] == "tabular")
+							echo "btn-primary";
+						else	
+							echo "btn-default";
+				?> ">
+					<i class="fa fa-bars" style="color:white"></i>
+				</button>
+			</form>
+			<form method="GET" action="filter.php" value="card" style="float:left">
+				<button type="submit" name="view" value="card" class="btn <?php
+						if(isset($query_array['view']) && $query_array['view'] == "card")
+							echo "btn-primary";
+						else if(!isset($query_array['view']))
+							echo "btn-primary";
+						else
+							echo "btn-default";
+				?>">
+					<i class="fa fa-credit-card" style="color:white"></i>
+				</button>
+			</form>
+		</div>
 		<a style="text-decoration:none;" data-toggle="modal" data-target="#moddistribution"> <button class="pull-right btn btn-danger">Generate Distribution</button></a>
 		<?php 
 		if(isset($_POST['bykfold']) || isset($_POST['bydate']))
 		{
 		?>
-			<a style="text-decoration:none;" href="http://localhost:8090/experiment/data/data_train/" target="_blank"> <button class="pull-right btn btn-warning">See training datasets</button></a>
+			<a style="text-decoration:none;" href="data/data_train/" target="_blank"> <button class="pull-right btn btn-warning">See training datasets</button></a>
 		<?php
 		}
 		?>
@@ -316,7 +341,27 @@
 		<div class="row">&nbsp;</div>
 
 		<div class="container">
-   		<div class="row">
+   		<div class="row col-lg-12">
+   		<?php
+   			if(isset($query_array['view']) && $query_array['view'] == "tabular")
+   			{
+   		?>
+   			<table class="table table-hover table-responsive" id="content" style="font-size:12pt">
+			<tr>
+				<th>no</th>
+				<th>picture</th>
+				<th>created_at</th>	
+				<th>source</th>	
+				<th>screen_name</th>
+				<th>name</th>
+				<th>text</th>
+				<th>clean_text</th>
+				<th>time_zone</th>
+			</tr>
+			
+   		<?php
+   			}
+   		?>
   				<?php
 					function call_curl($headers, $method, $url, $data)
 					{			
@@ -346,7 +391,7 @@
 						$response = curl_exec($handle);
 						$code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
 						curl_close($handle);
-						print($code);
+						#print($code);
 						#print($response);
 						return $response;
 					}
@@ -702,10 +747,10 @@
 						$if_sql = "SELECT (EXISTS(SELECT * FROM `cleanse_config` WHERE tracker='".$query_array['tracker']."')) as result";
 						$res_if_sql = mysql_query($if_sql);							
 						$row = mysql_fetch_array($res_if_sql);
-						print_r($row);
+						#print_r($row);
 						if($row[0] == 0)
 						{
-							print("<h1>HALO</h1>");
+							#print("<h1>HALO</h1>");
 							$insert_config = "INSERT INTO cleanse_config(numbers, punctuation, stopword, normalize, lowercase, url, tracker, keyword, source) 
 											VALUES('".((isset($query_array['numbers']) && strlen($query_array['numbers']) > 0)?'Y':'N')."',
 												   '".((isset($query_array['punctuation']) && strlen($query_array['punctuation']) > 0)?'Y':'N')."',
@@ -716,7 +761,7 @@
 												   '".((isset($query_array['tracker']) && strlen($query_array['tracker']) > 0)?$query_array['tracker']:'NOTRACKER')."',
 												   '".((isset($query_array['query']) && strlen($query_array['query']) > 0)?$query_array['query']:'')."',
 												   '".((isset($query_array['source']) && strlen($query_array['source']) > 0)?$query_array['source']:'')."')";
-							print($insert_config);
+							#print($insert_config);
 							mysql_query($insert_config);
 						}else
 						{
@@ -730,7 +775,7 @@
 												 keyword =   '".((isset($query_array['query']) && strlen($query_array['query']) > 0)?$query_array['query']:'')."',
 												 source = '".((isset($query_array['source']) && strlen($query_array['source']) > 0)?$query_array['source']:'')."'
 												 WHERE tracker='".((isset($query_array['tracker']) && strlen($query_array['tracker']) > 0)?$query_array['tracker']:'NOTRACKER')."'";
-							print($update_config);
+							#print($update_config);
 							mysql_query($update_config);
 
 						}
@@ -831,6 +876,25 @@
 							}
 						}
 				?>
+
+				<?php
+   					if(isset($query_array['view']) && $query_array['view'] == "tabular")
+   					{
+   				?>
+   					<tr>
+						<td><?php echo $i+($curr_page*100)-100; ?></td>
+						<td><img src='<?php echo $row{'picture'}; ?>'/></td>
+						<td><?php echo substr($row{'created_at'}, 0, 11); ?></td>
+						<td><?php echo $row{'source'}; ?></td>
+						<td><?php echo $row{'screen_name'}; ?></td>
+						<td><?php echo $row{'name'}; ?></td>
+						<td><?php echo $row{'text'}; ?></td>
+						<td><?php echo $ctext; ?></td>
+						<td><?php echo $row{'time_zone'}; ?></td>
+					</tr>
+   				<?php
+   					}else{
+   				?>
 				<div class="col-md-4 col-sm-6">
 			      	 <div class="panel panel-default">
 			           <div class="panel-heading"><a href="#" class="pull-right"><?php echo substr($row{'created_at'}, 0, 11); ?></a> <h4 style=" border: 0 solid #efefef;
@@ -849,6 +913,9 @@
 			              
 			         </div> 
 			    </div>
+			    <?php
+   					}
+   				?>
 				<?php
 					}
 					//close the connection
@@ -857,7 +924,7 @@
 					
 					if(isset($_POST['bykfold']))
 					{
-						print("TEST");
+						#print("TEST");
 						// Get Training Data
 						//clear all files
 						$files = glob('c:/xampp/htdocs/experiment/data/data_train/*'); // get all file names
@@ -868,20 +935,38 @@
 
 						#print_r($_POST['k-fold']);
 						if (isset($_POST['k-fold'])) {
-							$sql_dws = $sql_dw;
+							$dbhandle = mysql_connect($hostname, $username, $password) 
+							 or die("Unable to connect to MySQL");
+							//echo "Connected to MySQL<br>";
+
+							//select a database to work with
+							$selected = mysql_select_db("datamining",$dbhandle) 
+							or die("Could not select examples");
+							
+							$res_api = mysql_query($_POST['sql']);
+							
+							//TODO: Turn into count(*) 
+							$oz = 0;
+							while($count = mysql_fetch_array($res_api))
+							{
+								$oz++;
+							}
+							print($oz);
+							
 							
 							for($p=1; $p<=$_POST['k-fold']; $p++)
 							{
-								$sql_dws .= " limit ".intval(($p-1)*($banyaknya/$_POST['k-fold'])).",".intval($banyaknya/$_POST['k-fold']);
-								#print($sql_dws);
-								$ch = curl_init(); 
+								$sql_dws = $_POST['sql'];
+								$sql_dws .= " limit ".intval(($p-1)*($oz/$_POST['k-fold'])).",".intval($oz/$_POST['k-fold']);
 								print($sql_dws);
+								$ch = curl_init(); 
+								#print($sql_dws);
 								
 								//set the url, number of POST vars, POST data
-								curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/json_cleanse.php");
+								curl_setopt($ch,CURLOPT_URL,"http://localhost/experiment/json_cleanse.php");
 								curl_setopt($ch,CURLOPT_POST, 1);
 								curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-								curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dws));
+								curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dws,  "attribute"=>$_POST['attribute']));
 								$result = curl_exec($ch);
 								
 								$file = fopen("data/data_train/train[".$p."].json","w");
@@ -891,30 +976,23 @@
 								$ch = curl_init(); 
 
 								//set the url, number of POST vars, POST data
-								curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/csv_cleanse.php");
+								curl_setopt($ch,CURLOPT_URL,"http://localhost/experiment/csv_cleanse.php");
 								curl_setopt($ch,CURLOPT_POST, 1);
 								curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-								curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dws));
+								curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dws,  "attribute"=>$_POST['attribute']));
 								
 								$result = curl_exec($ch);
 								$file = fopen("data/data_train/train[".$p."].csv","w");
 								fwrite($file,$result);
 								fclose($file);
 								curl_close($ch);
-								
-								$sql_dws = $sql_dw;
 							}
 						}
 					}else if(isset($_POST['bydate']))
 					{
 						// Get Training Data
 						//clear all files
-						$files = glob('c:/xampp/htdocs/experiment/data/data_train/*'); // get all file names
-						foreach($files as $file){ // iterate files
-						  if(is_file($file))
-							unlink($file); // delete file
-						}		
-						
+							
 						$dbhandle = mysql_connect($hostname, $username, $password) 
 						 or die("Unable to connect to MySQL");
 						//echo "Connected to MySQL<br>";
@@ -922,24 +1000,32 @@
 						//select a database to work with
 						$selected = mysql_select_db("datamining",$dbhandle) 
 						  or die("Could not select examples");
+					
+						$files = glob('c:/xampp/htdocs/experiment/data/data_train/*'); // get all file names
+						foreach($files as $file){ // iterate files
+						  if(is_file($file))
+							unlink($file); // delete file
+						}		
+						
 						$sql_dws = $sql_dw;
 						$sql_dws .= " GROUP BY created_at";
 						$sql_dws = mysql_query($sql_dws);
-						$sql_dwz = $sql_dw;
+						$sql_dwz = $_POST['sql'];
 						$p = 1;
 						while($rw = mysql_fetch_array($sql_dws))
 						{
-							$sql_dwz .=(($flagWhere==0)?" WHERE ":" AND "). "created_at ='".$rw['created_at']."' ";
-							$sql_dwz .= " limit ".($_POST['by-date']);
-							print($sql_dwz);
+							$sql_temp = $_POST['sql'];
+							$sql_temp .=((strpos($sql_temp, "WHERE")===false)?" WHERE ":" AND "). "created_at ='".$rw['created_at']."' ";
+							$sql_temp .= " limit ".($_POST['by-date']);
+							#print($sql_dwz);
 							// to deactivate WHERE
 							
 							//request
 							$ch = curl_init(); 
-							curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/json_cleanse.php");
+							curl_setopt($ch,CURLOPT_URL,"http://10.11.1.37/experiment/json_cleanse.php");
 							curl_setopt($ch,CURLOPT_POST, 1);
 							curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-							curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dwz));
+							curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_temp, "attribute"=>$_POST['attribute']));
 							$result = curl_exec($ch);
 							
 							$file = fopen("data/data_train/train[".$p."].json","w");
@@ -949,10 +1035,10 @@
 							$ch = curl_init(); 
 
 							//set the url, number of POST vars, POST data
-							curl_setopt($ch,CURLOPT_URL,"http://localhost:8090/experiment/csv_cleanse.php");
+							curl_setopt($ch,CURLOPT_URL,"http://10.11.1.37/experiment/csv_cleanse.php");
 							curl_setopt($ch,CURLOPT_POST, 1);
 							curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-							curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_dwz));
+							curl_setopt($ch,CURLOPT_POSTFIELDS,array("sql"=>$sql_temp, "attribute"=>$_POST['attribute']));
 							
 							$result = curl_exec($ch);
 							$file = fopen("data/data_train/train[".$p."].csv","w");
@@ -971,11 +1057,21 @@
 					
 					
 				?>
+
+			<?php
+				if(isset($query_array['view']) && $query_array['view'] == "tabular")
+				{
+			?>
+			
+				</table>
+			<?php
+				}
+			?>
 		 </div><!--/row-->
 		<div class="pull-right" style="display:inline">
 			<form action="csv_cleanse.php" style="float:left" target="_blank" method="post">
 				<input type="text" style="display:none" name="sql" value="<?php echo $sql_dw; ?>" />
-				<input type="text" style="display:none" name="attribute" value="<?php echo
+				<input type="hidden" name="attribute" value="<?php echo
 									(isset($query_array['punctuation'])?'punctuation':"")
 									.(isset($query_array['numbers'])? ',numbers':"")
 									.(isset($query_array['url'])? ',url':"")
@@ -986,7 +1082,7 @@
 			</form>
 			<form action="json_cleanse.php" style="float:left" target="_blank" method="post">
 				<input type="text" style="display:none" name="sql" value="<?php echo $sql_dw; ?>" />
-				<input type="text" style="display:none" name="attribute" value="<?php echo 
+				<input type="hidden" name="attribute" value="<?php echo 
 									(isset($query_array['punctuation'])?'punctuation':"")
 									.(isset($query_array['numbers'])? ',numbers':"")
 									.(isset($query_array['url'])? ',url':"")
@@ -1017,7 +1113,8 @@
 									.(isset($query_array['url'])? '&url=on':"")
 									.(isset($query_array['normalize'])? '&normalize=on':"")
 									.(isset($query_array['stopword'])? '&stopword=on':"")
-									.(isset($query_array['lowercase'])? '&lowercase=on':"")."'>".$j."</a></li>";
+									.(isset($query_array['lowercase'])? '&lowercase=on':"")
+									.(isset($query_array['view'])? '&view='.$query_array['view']:"")."'>".$j."</a></li>";
 						else
 							echo "<li><a href='filter.php?page=".$j.
 									(isset($query_array['highlight'])?'&highlight=Highlight%20Mode':"")
@@ -1026,7 +1123,8 @@
 									.(isset($query_array['url'])? '&url=on':"")
 									.(isset($query_array['normalize'])? '&normalize=on':"")
 									.(isset($query_array['stopword'])? '&stopword=on':"")
-									.(isset($query_array['lowercase'])? '&lowercase=on':"")."'>".$j.
+									.(isset($query_array['lowercase'])? '&lowercase=on':"")
+									.(isset($query_array['view'])? '&view='.$query_array['view']:"")."'>".$j.
 						"</a></li>";
 					}
 				?>
@@ -1261,6 +1359,14 @@
 				
 			  </div>
 			  <div class="modal-footer">
+			  <input type="hidden" name="sql" value="<?php echo $sql_dw; ?>">
+			  <input type="hidden" name="attribute" value="<?php echo 
+									(isset($query_array['punctuation'])?'punctuation':"")
+									.(isset($query_array['numbers'])? ',numbers':"")
+									.(isset($query_array['url'])? ',url':"")
+									.(isset($query_array['normalize'])? ',normalize':"")
+									.(isset($query_array['stopword'])? ',stopword':"")
+									.(isset($query_array['lowercase'])? ',lowercase':"")?>"/>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				<input type="submit" class="btn btn-primary" value="Generate" />
 			  </div>

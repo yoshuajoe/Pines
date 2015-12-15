@@ -2,51 +2,29 @@
 <head>    
     <title>Twitter Analysis | Visualization</title>
     <script type="text/javascript" src="jquery-1.11.3.js"></script>
-	<script type="text/javascript" src="jquery.tabletojson.js"></script>
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/d3.min.js"></script>
 	<script type="text/javascript" src="js/metricsgraphics.min.js"></script>
-	<script type="text/javascript" src="js/d3.layout.cloud.js"></script>
-	<script src="http://phuonghuynh.github.io/js/bower_components/d3-transform/src/d3-transform.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/extarray.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/misc.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/micro-observer.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/microplugin/src/microplugin.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/bubble-chart.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/plugins/central-click/central-click.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/plugins/lines/lines.js"></script>
-  <script src="http://dimplejs.org/dist/dimple.v2.1.6.min.js"></script>
-	<script type="text/javascript" src="js/metricsgraphics.min.js"></script>
-	<script type="text/javascript" src="js/d3.layout.cloud.js"></script>
-	<script src="http://phuonghuynh.github.io/js/bower_components/d3-transform/src/d3-transform.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/extarray.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/misc.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/cafej/src/micro-observer.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/microplugin/src/microplugin.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/bubble-chart.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/plugins/central-click/central-click.js"></script>
-  <script src="http://phuonghuynh.github.io/js/bower_components/bubble-chart/src/plugins/lines/lines.js"></script>
-  <script src="http://dimplejs.org/dist/dimple.v2.1.6.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
 
   <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 	<link href="css/metricsgraphics.css" rel="stylesheet" type="text/css" />
 
   <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 	<link href="css/metricsgraphics.css" rel="stylesheet" type="text/css" />
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 	<style>
-		.bs-callout+.bs-callout {
-			margin-top: -5px;
+		.fa
+		{
+			margin-top:3px;
+			color: #fff;
 		}
-		.bs-callout-info {
-			border-left-color: #1b809e;
-		}
-		.bs-callout {
-			padding: 20px;
-			margin: 20px 0;
-			border: 1px solid #eee;
-			border-left-width: 5px;
-			border-radius: 3px;
-		}
+		.nav li
+		{
+			height: 4%;
+		} 
+
 		.btn-default
 		{
 			background-color:#ccc;
@@ -55,6 +33,15 @@
 		}
 		*{
 			color:grey;
+		}
+
+		svg g text, tspan
+		{
+			 font-size:2rem !important;
+		}
+		.mg-x-axis>text
+		{
+			display: none !important;
 		}
 		input[type=text],
 		input[type=text]:hover,
@@ -85,6 +72,7 @@
 			cursor: inherit;
 			display: block;
 		}
+
     #chart {
         height: 360px;
         margin: 0 auto;                                               /* NEW */
@@ -118,14 +106,245 @@
       h1 {                                                            /* NEW */
         font-size: 14px;                                              /* NEW */
         text-align: center;                                           /* NEW */
-      }  
+      } 
+
+     .nav-tabs
+     {
+     	border-bottom: none;
+     } 
+     .timeline {
+    list-style: none;
+    padding: 20px 0 20px;
+    position: relative;
+}
+
+    .timeline:before {
+        top: 0;
+        bottom: 0;
+        position: absolute;
+        content: " ";
+        width: 3px;
+        background-color: #eeeeee;
+        left: 50%;
+        margin-left: -1.5px;
+    }
+
+    .timeline > li {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+        .timeline > li:before,
+        .timeline > li:after {
+            content: " ";
+            display: table;
+        }
+
+        .timeline > li:after {
+            clear: both;
+        }
+
+        .timeline > li:before,
+        .timeline > li:after {
+            content: " ";
+            display: table;
+        }
+
+        .timeline > li:after {
+            clear: both;
+        }
+
+        .timeline > li > .timeline-panel {
+            width: 46%;
+            float: left;
+            border: 1px solid #d4d4d4;
+            border-radius: 2px;
+            padding: 20px;
+            position: relative;
+            -webkit-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
+        }
+
+            .timeline > li > .timeline-panel:before {
+                position: absolute;
+                top: 26px;
+                right: -15px;
+                display: inline-block;
+                border-top: 15px solid transparent;
+                border-left: 15px solid #ccc;
+                border-right: 0 solid #ccc;
+                border-bottom: 15px solid transparent;
+                content: " ";
+            }
+
+            .timeline > li > .timeline-panel:after {
+                position: absolute;
+                top: 27px;
+                right: -14px;
+                display: inline-block;
+                border-top: 14px solid transparent;
+                border-left: 14px solid #fff;
+                border-right: 0 solid #fff;
+                border-bottom: 14px solid transparent;
+                content: " ";
+            }
+
+        .timeline > li > .timeline-badge {
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            font-size: 1.4em;
+            text-align: center;
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            margin-left: -25px;
+            background-color: #999999;
+            z-index: 100;
+            border-top-right-radius: 50%;
+            border-top-left-radius: 50%;
+            border-bottom-right-radius: 50%;
+            border-bottom-left-radius: 50%;
+        }
+
+        .timeline > li.timeline-inverted > .timeline-panel {
+            float: right;
+        }
+
+            .timeline > li.timeline-inverted > .timeline-panel:before {
+                border-left-width: 0;
+                border-right-width: 15px;
+                left: -15px;
+                right: auto;
+            }
+
+            .timeline > li.timeline-inverted > .timeline-panel:after {
+                border-left-width: 0;
+                border-right-width: 14px;
+                left: -14px;
+                right: auto;
+            }
+
+.timeline-badge.primary {
+    background-color: #2e6da4 !important;
+}
+
+.timeline-badge.success {
+    background-color: #3f903f !important;
+}
+
+.timeline-badge.warning {
+    background-color: #f0ad4e !important;
+}
+
+.timeline-badge.danger {
+    background-color: #d9534f !important;
+}
+
+.timeline-badge.info {
+    background-color: #5bc0de !important;
+}
+
+.timeline-title {
+    margin-top: 0;
+    color: inherit;
+}
+
+.timeline-body > p,
+.timeline-body > ul {
+    margin-bottom: 0;
+}
+
+    .timeline-body > p + p {
+        margin-top: 5px;
+    }
+
+@media (max-width: 767px) {
+    ul.timeline:before {
+        left: 40px;
+    }
+
+    ul.timeline > li > .timeline-panel {
+        width: calc(100% - 90px);
+        width: -moz-calc(100% - 90px);
+        width: -webkit-calc(100% - 90px);
+    }
+
+    ul.timeline > li > .timeline-badge {
+        left: 15px;
+        margin-left: 0;
+        top: 16px;
+    }
+
+    ul.timeline > li > .timeline-panel {
+        float: right;
+    }
+
+        ul.timeline > li > .timeline-panel:before {
+            border-left-width: 0;
+            border-right-width: 15px;
+            left: -15px;
+            right: auto;
+        }
+
+        ul.timeline > li > .timeline-panel:after {
+            border-left-width: 0;
+            border-right-width: 14px;
+            left: -14px;
+            right: auto;
+        }
+}
 </style>
 </head>
 <body>
 	<?php
 		parse_str($_SERVER["QUERY_STRING"], $query_array);
 		ini_set('max_execution_time', 3000000);
-					
+	?>
+	<section class="featured" style="padding:80px 0 40px">
+		<div class="container"> 
+			<div class="row mar-bot40">
+				<div class="col-md-6 col-md-offset-3">	
+					<div class="align-center">
+						<h2 class="slogan">Sentiment Analysis</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="section-services" class="section pad-bot30 bg-white">
+    <div class="container"> 
+      <h4>What will you see:</h4>
+      <ol>
+        <li>A chart of sentiment</li>
+      </ol>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">&nbsp;</div>
+    <div class="container">
+      <h4>How to use</h4>
+      <p>Just tell us the topic you want to visualize i.e <code>ahok</code> and tell us the depth of tree. Note : Uppercase and lowercase doesn't matter.</p>
+    </div>
+	<div class="container">
+      <div class="row">&nbsp;</div>
+      <h4>Choosing the Topic</h4>
+      <p>We stored some topics in our database, so select one of them to be loaded.</p>
+      <form method="GET" action="senti.php?">
+      <div class="input-group">
+        <div class="input-group">
+        <span class="input-group-btn">
+          <button class="btn btn-default" style="background-color:#fff;color:#000" type="button">Which topics&nbsp;</button>
+        </span>
+        <input type="text" name="tracker" class="form-control"  placeholder="<?php if(isset($query_array['tracker'])) echo $query_array['tracker']; else echo "topics"; ?>" 
+          value="<?php if(isset($query_array['tracker'])) echo $query_array['tracker']; ?>">
+        </div>
+      </div>
+
+        <input type="hidden" name="page" value="<?php if(isset($query_array['page'])) echo $query_array['page']; else echo 1;?>"/>          
+        <input type="submit" id="gen" class="btn btn-primary pull-right" style="margin-right:1%" value="I'm ready" />
+      </form>
+	<?php				
 		if(isset($query_array['tracker']))
 		{
 			$username = "root";
@@ -139,20 +358,141 @@
 			$selected = mysql_select_db("datamining",$dbhandle) 
 			or die("Could not select examples");
 
-			$sql_senti_pos = "SELECT created_at, COUNT(*) as cnt FROM tweets
-					WHERE tracker='".$query_array['tracker']."'  AND polarity = 'positif' 
-					GROUP BY created_at";
-			$sql_senti_net = "SELECT created_at, COUNT(*) as cnt FROM tweets
-					WHERE tracker='".$query_array['tracker']."'  AND polarity = 'netral' 
-					GROUP BY created_at";
-			$sql_senti_neg = "SELECT created_at, COUNT(*) as cnt FROM tweets
-					WHERE tracker='".$query_array['tracker']."'  AND polarity = 'negatif' 
-					GROUP BY created_at";
+			$sql_senti_pos = "SELECT created_at, COUNT(*) as cnt FROM tweets";
+			$sql_senti_net = "SELECT created_at, COUNT(*) as cnt FROM tweets";
+			$sql_senti_neg = "SELECT created_at, COUNT(*) as cnt FROM tweets";
+
+			$sql_di_pos = "SELECT *  FROM tweets";
+			$sql_di_net = "SELECT * FROM tweets";
+			$sql_di_neg = "SELECT * FROM tweets";
+
+			$get_config = "SELECT * FROM cleanse_config WHERE tracker='".$query_array['tracker']."'";
+			$res_get_conf = mysql_query($get_config);
+			$res_conf = mysql_fetch_array($res_get_conf);
+			$flagWhere = 0; 
+
+			if(isset($res_conf['query']) && strlen($res_conf['query']) > 0)
+			{
+				if($flagWhere == 0)
+				{
+					$sql_senti_pos .= " WHERE ";
+					$sql_senti_net .= " WHERE ";
+					$sql_senti_neg .= " WHERE ";
+					$sql_di_pos .= " WHERE ";
+					$sql_di_net .= " WHERE ";
+					$sql_di_neg .= " WHERE ";
+					$flagWhere = 1;
+				}
+				
+				$arr_spl = explode(",", $res_conf['query']);
+				for($p = 0; $p < count($arr_spl); $p++)
+				{
+					if($p > 0)
+					{
+						$sql_senti_pos .= " AND ";
+						$sql_senti_net .= " AND ";
+						$sql_senti_neg .= " AND ";
+						$sql_di_pos .= " AND ";
+						$sql_di_net .= " AND ";
+						$sql_di_neg .= " AND ";
+					}
+
+					$sql_di_pos .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_di_net .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_di_neg .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_senti_pos .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_senti_net .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_senti_neg .= " text NOT LIKE ('%".trim($arr_spl[$p])."%')";
+				}
+			}
+						
+			if(isset($res_conf['source']) && strlen($res_conf['source']) > 0)
+			{
+				if($flagWhere == 0)
+				{
+					$sql_senti_pos .= " WHERE ";
+					$sql_senti_net .= " WHERE ";
+					$sql_senti_neg .= " WHERE ";
+					$sql_di_pos .= " WHERE ";
+					$sql_di_net .= " WHERE ";
+					$sql_di_neg .= " WHERE ";
+					$flagWhere = 1;
+				}
+				
+				$arr_spl = explode(",", $res_conf['source']);
+				for($p = 0; $p < count($arr_spl); $p++)
+				{
+					if(isset($res_conf['query']) && strlen($res_conf['query']) > 0 
+						|| $p > 0)
+					{
+						$sql_senti_pos .= " AND ";
+						$sql_senti_net .= " AND ";
+						$sql_senti_neg .= " AND ";
+						$sql_di_pos .= " AND ";
+						$sql_di_net .= " AND ";
+						$sql_di_neg .= " AND ";
+					}
+					
+					$sql_senti_pos .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_senti_net .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_senti_neg .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_di_pos .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_di_net .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					$sql_di_neg .= " source NOT LIKE ('%".trim($arr_spl[$p])."%')";
+					
+				}
+			}
+						
+			if(isset($query_array['tracker']) && strlen($query_array['tracker']) > 0)
+			{
+				if($flagWhere == 0)
+				{
+					$sql_senti_pos .= " WHERE ";
+					$sql_senti_net .= " WHERE ";
+					$sql_senti_neg .= " WHERE ";
+					$sql_di_pos .= " WHERE ";
+					$sql_di_net .= " WHERE ";
+					$sql_di_neg .= " WHERE ";
+					$flagWhere = 1;
+				}
+				
+				if(isset($res_conf['source']) && strlen($res_conf['source']) > 0 
+					|| isset($res_conf['query']) && strlen($res_conf['query']) > 0)
+					{
+						$sql_senti_pos .= " AND ";
+						$sql_senti_net .= " AND ";
+						$sql_senti_neg .= " AND ";
+						$sql_di_pos .= " AND ";
+						$sql_di_net .= " AND ";
+						$sql_di_neg .= " AND ";
+					}
+				
+				$sql_senti_pos .= " tracker = '".trim($query_array['tracker'])."'";
+				$sql_senti_net .= " tracker = '".trim($query_array['tracker'])."'";
+				$sql_senti_neg .= " tracker = '".trim($query_array['tracker'])."'";
+				$sql_di_pos .= " tracker = '".trim($query_array['tracker'])."'";
+				$sql_di_net .= " tracker = '".trim($query_array['tracker'])."'";
+				$sql_di_neg .= " tracker = '".trim($query_array['tracker'])."'";
 			
+			}
+			
+			$sql_senti_pos .= "   AND polarity = 'positif' GROUP BY created_at";
+			$sql_senti_neg .= "   AND polarity = 'negatif' GROUP BY created_at";
+			$sql_senti_net .= "   AND polarity = 'netral' GROUP BY created_at";
+			
+			$sql_di_pos .= " ORDER BY RAND() LIMIT 10";
+			$sql_di_net .= " ORDER BY RAND() LIMIT 10";
+			$sql_di_neg .= " ORDER BY RAND() LIMIT 10";
+
 			$res_pos = mysql_query($sql_senti_pos);
 			$res_net = mysql_query($sql_senti_net);
 			$res_neg = mysql_query($sql_senti_neg);
-			
+
+			$res_pos_di = mysql_query($sql_di_pos);
+			$res_net_di = mysql_query($sql_di_net);
+			$res_neg_di = mysql_query($sql_di_neg);
+
+			print($sql_senti_pos);
 			$arr_pol = array();
 			$p = 0;
 			$arr_temp_1 = array();
@@ -186,86 +526,151 @@
 				$p++;
 			}
 			
-			$f = fopen("data/data_viz/senti.csv", "w");
-			fwrite($f, "label,count\n");
-			fwrite($f, "positif,".$count_pos."\n");
-			fwrite($f, "netral,".$count_net."\n");
-			fwrite($f, "negatif,".$count_neg."\n");
-			fclose($f);
-
-			$arr_pol = array($arr_temp_1,$arr_temp_2,$arr_temp_3);
-			
-			$f = fopen("data/data_viz/polarity_viz.json", "w");
-			fwrite($f, json_encode($arr_pol));
-			fclose($f);
 			
 			// end of dailypeak
 			mysql_close($dbhandle);
 			
 		}
 	?>
-	<div class="container-fluid">
-		<div class="bs-callout bs-callout-info" id="callout-navbar-breakpoint">
-			<h4>Sentiment Analysis</h4>
-			<p>We appreciate your efforts so here is the dessert. Once again I'll ask you something below.</p>
-			<form method="GET" action="senti.php?">
-			<div class="input-group">
-					<span class="input-group-btn">
-						<h3>Which topic ..&nbsp;</h3>
-					</span>
-					<div class="row">&nbsp;</div>
-					<input type="text" style="text-deoration:none;width:30%;padding:2%;font-size:16pt;color:gray;" name="tracker" class="form-control" 
-					value="<?php if(isset($query_array['tracker'])) echo $query_array['tracker']; ?>">
-			</div>
-			<div class="row">&nbsp;</div>
-			<div class="row">&nbsp;</div>
-			<input type="submit" class="btn btn-success" value="I'm ready ">
-			</form>	
-			<br/>
-		</div>
-	</div>
-	<div class="container-fluid">
-		<center><h1 style="font-size:24pt">Sentiment Portion</h1></center>
-		<div id="chart"></div>
-	</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	
-	<div class="row">&nbsp;</div>
-	
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	<div class="row">&nbsp;</div>
-	
-	
-	<center><div class="container-fluid">
-		<h3>Sentiment per Day</h3>
-			<div class="row">&nbsp;</div>
-			<div class="row">&nbsp;</div>
-			<div class="row col-lg-12" style="display:inline;text-align:center">
-				<div class="col-lg-6" style="text-align:center">
-					<div id="polarity" style="text-align:center"></div>
+	<div class="container">
+		<ul class="nav nav-tabs">
+		  <li class="active"><a data-toggle="tab" href="#ss">Sentiment Statistic</a></li>
+		  <li><a data-toggle="tab" href="#spd">Sentiment Per Day</a></li>
+		  <li><a data-toggle="tab" href="#di">Dive in</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="ss" class="tab-pane fade in active">
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<center><h3>Sentiment Statistic</h3></center>
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<div class="row col-lg-12" style="display:inline">
+					<div class="col-lg-12">
+						<p>This slide is showing how many tweets were collected during the previous step We set the svg element’s size in JavaScript so that we can compute the height based on the size of the dataset (data.length). This way, the size is based on the height of each bar rather than the overall height of the chart, and we ensure adequate room for labels.</p>
+
+						<p>Each bar consists of a g element which in turn contains a rect and a text. We use a data join (an enter selection) to create a g element for each data point. We then translate the g element vertically, creating a local origin for positioning the bar and its associated label.</p>
+
+						<p>Since there is exactly one rect and one text element per g element, we can append these elements directly to the g, without needing additional data joins. Data joins are only needed when creating a variable number of children based on data; here we are appending just one child per parent. The appended rects and texts inherit data from their parent g element, and thus we can use data to compute the bar width and label position.</p>
+					</div>
+					<div class="row col-lg-12 text-center" >
+						<div id="senstat"></div>
+					</div>
 				</div>
-				<div class="row">
-                <div class="col-lg-7 legend" style="text-align:center;">
-                	<span class="mg-line1-legend-color">— Positif&nbsp; </span><span class="mg-line2-legend-color">— Netral&nbsp; </span><span class="mg-line3-legend-color">— Negatif&nbsp; </span>
-                </div>
-                <div class="col-lg-5"></div>
-            </div>
+			  </div>	
+		 	 
+			  <div id="spd" class="tab-pane fade in">
+			  		<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<center><h3>Sentiment Per Day</h3></center>
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<div class="row col-lg-12" style="display:inline">
+					<div class="col-lg-12">
+					<p>This slide is showing how many tweets were collected during the previous step We set the svg element’s size in JavaScript so that we can compute the height based on the size of the dataset (data.length). This way, the size is based on the height of each bar rather than the overall height of the chart, and we ensure adequate room for labels.</p>
+
+					<p>Each bar consists of a g element which in turn contains a rect and a text. We use a data join (an enter selection) to create a g element for each data point. We then translate the g element vertically, creating a local origin for positioning the bar and its associated label.</p>
+
+					<p>Since there is exactly one rect and one text element per g element, we can append these elements directly to the g, without needing additional data joins. Data joins are only needed when creating a variable number of children based on data; here we are appending just one child per parent. The appended rects and texts inherit data from their parent g element, and thus we can use data to compute the bar width and label position.</p>
+
+					</div>
+					<div class="row col-lg-12 text-center" >
+						<div id="polarity"></div>
+					</div>
+					<div class="row text-center">
+            			<div class="col-lg-7 legend">
+            				<span class="mg-line1-legend-color">— Positif&nbsp; </span><span class="mg-line2-legend-color">— Netral&nbsp; </span><span class="mg-line3-legend-color">— Negatif&nbsp; </span>
+            			</div>
+        			</div>
+				</div>
 			</div>
-	</div></center>
+			<div id="di" class="tab-pane fade in">
+			  		<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<center><h3>Dive Into Tweets</h3></center>
+				<a href="issue?tracker='<?php echo $query_array['tracker']; ?>'" class="pull-right"><i class="fa fa-random" style="color:#337ab7"></i>&nbsp;Shuffle</a>
+				<div class="row">&nbsp;</div>
+				<div class="row">&nbsp;</div>
+				<div class="row col-lg-12">
+					<ul class="timeline">
+			        <?php
+			        	$i = 1;
+			        	while($row=mysql_fetch_array($res_pos_di))
+			        	{
+			        		if($i%2 != 0)
+			        		{
+			        ?>
+			        		<li>
+					          <div class="timeline-badge <?php 
+						          		if($row['polarity'] == "positif")
+						          			echo "success";
+						          		else if($row['polarity'] == "negatif")
+						          			echo "danger";
+						          		else
+						          			echo "warning";
+						          ?>"><i class="fa <?php 
+						          		if($row['polarity'] == "positif")
+						          			echo "fa-smile-o";
+						          		else if($row['polarity'] == "negatif")
+						          			echo "fa-frown-o";
+						          		else
+						          			echo "fa-meh-o";
+						          ?> fa-2x">
+						          </i></div>
+					          <div class="timeline-panel">
+					            <div class="timeline-heading">
+					              <h4 class="timeline-title">@<?php echo $row{'screen_name'};?></h4>
+					              <p><small class="text-muted"><i class="fa "></i> <?php echo substr($row{'created_at'},0,11);?> via <?php echo $row{'source'};?></small></p>
+					            </div>
+					            <div class="timeline-body">
+					              <p><?php echo $row{'text'};?></p>
+					            </div>
+					          </div>
+					        </li>
+			        <?php
+			        		}else
+			        		{
+			        ?>
+				        	<li class="timeline-inverted">
+						          <div class="timeline-badge <?php 
+						          		if($row['polarity'] == "positif")
+						          			echo "success";
+						          		else if($row['polarity'] == "negatif")
+						          			echo "danger";
+						          		else
+						          			echo "warning";
+						          ?>"><i class="fa <?php 
+						          		if($row['polarity'] == "positif")
+						          			echo "fa-smile-o";
+						          		else if($row['polarity'] == "negatif")
+						          			echo "fa-frown-o";
+						          		else
+						          			echo "fa-meh-o";
+						          ?> fa-2x"></i></div>
+						          <div class="timeline-panel">
+						            <div class="timeline-heading">
+						              <h4 class="timeline-title">@<?php echo $row{'screen_name'};?></h4>
+						              <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> <?php echo substr($row{'created_at'},0,11);?> via <?php echo $row{'source'};?></small></p>
+						            </div>
+						            <div class="timeline-body">
+						              <p><?php echo $row{'text'};?></p>
+						            </div>
+						          </div>
+						        </li>
+			        <?php
+			        		}
+			        		$i++;
+			        	}
+			        ?>
+			        </ul>
+				</div>
+			</div>
+	</div>
+
+    </section>
 	<script>
       (function(d3) {
         'use strict';
@@ -414,15 +819,36 @@
 
 	    MG.data_graphic({
 	        title: "Sentiment Analysis by Date",
-	        description: "This line chart contains multiple lines.",
+	        description: "Sentiment by Date",
 	        data: data,
-	        width: $(window).width()-100,
-	        height: 700,
-	        right: 0,
+	        width: $(window).width()-500,
+	        height: 400,
+	        right: 250,
 	        target: '#polarity',
+	        x_accessor: 'date',
 	        legend: ['Positif','Netral','Negatif'],
 	        legend_target: '.legend'
 	    });
 	});
+
+	var bar_data = Array();
+	bar_data[0] = {'label':'positif', 'value':<?php echo $count_pos; ?>};
+	bar_data[1] = {'label':'negatif', 'value':<?php echo $count_neg; ?>};
+	bar_data[2] = {'label':'netral', 'value':<?php echo $count_net; ?>};
+	
+	MG.data_graphic({
+	    title: "Sentiment Summary",
+	    description: "Work-in-progress",
+	    data: bar_data,
+	    chart_type: 'bar',
+	    x_accessor: 'value',
+	    y_accessor: 'label',
+	    width: 600,
+	    right: 0,
+	    target: '#senstat',
+	    animate_on_load: true,
+	    x_axis: false
+	});
+
     </script>
 </html>

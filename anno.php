@@ -1,6 +1,6 @@
 <html>  
 <head>    
-    <title>Twitter Analysis | Raw Tweet Selection</title>
+    <title>Twitter Analysis | Tweets Annotation</title>
     <script type="text/javascript" src="jquery-1.11.3.js"></script>
 	<script type="text/javascript" src="jquery.tabletojson.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -112,7 +112,6 @@
 					$truncate = "TRUNCATE TABLE tweets_train";
 					$res_truncate = mysql_query($truncate);
 					ini_set('max_execution_time', 3000000);
-					
 					if(isset($_POST['bydate']))
 					{
 						foreach($dst as $file)
@@ -187,7 +186,7 @@
 		<div class="row">&nbsp;</div>
 		<div class="container">
 		<h4>Annotation Process</h4>
-			<form method="POST" action="anno.php?">
+			<form method="POST" action="anno.php">
 				<p>Which method did you use before?</p>
 				<div class="btn-group" data-toggle="buttons">
 					<label class="btn active">
@@ -316,7 +315,7 @@
 	{
 		$.ajax({
 		  type: "POST",
-		  url: "http://localhost:8090/experiment/save_train_ajax.php",
+		  url: "http://10.11.1.37/experiment/save_train_ajax.php",
 		  data: {"id":a, "polar":e},
 		  success: function(data){
 			   alert(data);

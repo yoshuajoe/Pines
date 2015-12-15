@@ -3,61 +3,6 @@
 
 		header('Content-Type: text/json; charset=utf-8');
 		header('Content-Disposition: attachment; filename=filter.json');
-	
-		// read the file
-		$punctuation_dict = array();
-		$normalize_dict = array();
-		$stopword_dict = array();
-		$numbers_dict = array();
-		
-		$file = fopen("data/punctuation.txt","r");
-		while(!feof($file))
-		{
-			$line=fgets($file);
-			$line_arr= explode(",",$line);
-			for($p=0; $p<count($line_arr); $p++)
-			{
-				$punctuation_dict[$p] = $line_arr[$p];
-			}
-		}
-		fclose($file);
-		
-		$file = fopen("data/numbers.txt","r");
-		while(!feof($file))
-		{
-			$line=fgets($file);
-			$line_arr= explode(",",$line);
-			for($p=0; $p<count($line_arr); $p++)
-			{
-				$numbers_dict[$p] = $line_arr[$p];
-			}
-		}
-		fclose($file);
-		
-		$file = fopen("data/normalize.txt","r");
-		while(!feof($file))
-		{
-			$line=fgets($file);
-			$line_arr = explode(",",$line);
-			for($p=0; $p<count($line_arr); $p++)
-			{
-				$normalize_dict[$p] = $line_arr[$p];
-			}
-		}
-		#print_r($normalize_dict);
-		fclose($file);
-		
-		$file = fopen("data/stopword.txt","r");
-		while(!feof($file))
-		{
-			$line=fgets($file);
-			$line_arr= explode(",",$line);
-			for($p=0; $p<count($line_arr); $p++)
-			{
-				$stopword_dict[$p] = $line_arr[$p];
-			}
-		}
-		fclose($file);
 		
 		$output = fopen('php://output', 'w');
 		
@@ -68,87 +13,50 @@
 		}
 		
 		//fputcsv($output, array('id', 'created_at', 'picture', 'source', 'screen_name', 'name', 'text', 'time_zone'));
-		$con = mysqli_connect('127.0.0.1', 'root', '', 'datamining');
-		$rows = mysqli_query($con, $_POST['sql']);
-		while ($row = mysqli_fetch_assoc($rows)) {
+	
+		$username = "root";
+		$password = "";
+		$hostname = "127.0.0.1"; 
+		$dbhandle = mysql_connect($hostname, $username, $password) 
+						 or die("Unable to connect to MySQL");
+						//echo "Connected to MySQL<br>";
+
+						//select a database to work with
+		$selected = mysql_select_db("datamining",$dbhandle) 
+						  or die("Could not select examples");
+		$rows = mysql_query($_POST['sql']);
+		#print( $_POST['sql']);
+		#print_r($rows);
+		
+		while ($row = mysql_fetch_array($rows)) {
 			$ctext = $row['text'];
-			if(isset($_POST['attribute'])){
-				$ctext = $row['text'];
-				if(in_array('url', $attr))
-				{
-					$regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@";
-					$ctext = preg_replace($regex, '', $ctext);
-				}
-				
-				if(in_array('punctuation', $attr))
-				{
-					$re = "/[";
-					for($p=0; $p<count($punctuation_dict); $p++)
-					{
-						$re .= $punctuation_dict[$p];
-					}
-					$re .= "]+/u";
-					$ctext = preg_replace($re, "", $ctext);
-					#$ctext = preg_replace("/(?![@#])\p{P}/u", "", $ctext);
-				}
-				
-				if(in_array('numbers', $attr))
-				{
-					$re = "/[";
-					for($p=0; $p<count($numbers_dict); $p++)
-					{
-						$re .= $numbers_dict[$p];
-					}
-					$re .= "]+/u";
-					$ctext = preg_replace($re, "", $ctext);
-					#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
-				}
-				
-				if(in_array('stopword', $attr))
-				{
-					$re = "/(";
-					for($p=0; $p<count($stopword_dict); $p++)
-					{
-						$re .= "\b".$stopword_dict[$p]."\b";
-						if($p < count($stopword_dict)-1)
-						{
-							$re .= "|";
-						}
-					}
-					$re .= ")/i";
-					#print($re);
-					$ctext = preg_replace($re, "", $ctext);
-					#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
-				}
-				
-				if(in_array('normalize', $attr))
-				{
-					
-					for($p=0; $p<count($normalize_dict); $p++)
-					{
-						$re = "/(";
-						$exp = explode("=", $normalize_dict[$p]);
-						#print_r($exp);
-						$re .= "\b".$exp[0]."\b";
-						$re .= ")/i";
-						$ctext = preg_replace($re, $exp[1], $ctext);
-					}
-					
-					#print($re);
-					
-					#$ctext = preg_replace('/[0123456789]+/', '', $ctext);
-				}
-				
-				if(in_array('lowercase', $attr))
-				{
-					$ctext = strtolower($ctext);
-				}
-			}
-			$row['text_clean'] = $ctext;
-			fwrite($output,json_encode($row)."\n");
+			$arr = array(
+							'id' => $row['id'],
+							'created_at' => $row['created_at'],
+							'picture' => $row['picture'],
+							'source' => $row['source'],
+							'favorited' => $row['favorited'],
+							'retweet_count' => $row['retweet_count'],
+							'text' => $row['text'],
+							'text_clean' => $row['text_clean'],
+							'screen_name' => $row['screen_name'],
+							'name' => $row['name'],
+							'friends_count' => $row['friends_count'],
+							'followers_count' => $row['followers_count'],
+							'statuses_count' => $row['statuses_count'],
+							'verified' => $row['verified'],
+							'utc_offset' => $row['utc_offset'],
+							'time_zone' => $row['time_zone'],
+							'in_reply_to_screen_name' => $row['in_reply_to_screen_name'],
+							'tracker' => $row['tracker'],
+							'is_active' => $row['is_active'],
+							'polarity' => $row['polarity'],
+							'timestamps' => $row['timestamps']
+						);
+			fwrite($output,json_encode($arr)."\n");
 		}
 		fclose($output);
-		mysqli_close($con);
+		mysql_close($dbhandle);
 		exit();
 	}
 ?>

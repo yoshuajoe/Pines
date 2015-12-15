@@ -174,16 +174,7 @@
           print($sql);
           $res = mysql_query($sql);
           
-          $file = "data/data_viz/datas.json";
-          if (!unlink($file))
-          {
-            echo ("Error deleting $file");
-          }
-          else
-          {
-            echo ("Deleted $file");
-          }
-
+          
           $f = fopen("data/data_viz/datas.json", "w");
           $arr = array(array());
           $p = 0;
@@ -258,7 +249,7 @@
         update(root);
       });
       
-      d3.select(self.frameElement).style("height", "800px");
+      d3.select(self.frameElement).style("height", "1000px");
       
       function update(source) {
       

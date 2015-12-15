@@ -27,6 +27,7 @@
 		    stroke: #ccc;
 		}
 
+
 		.nav-tabs{
 			color:#000;
 			border-bottom: none;
@@ -47,10 +48,13 @@
 			color:#000;
 		}
 
-		text
+		svg g text, tspan
 		{
-			font-size: 16pt;
-			font-weight: 700;
+			 font-size:2rem !important;
+		}
+		.mg-x-axis>text
+		{
+			display: none !important;
 		}
 
 		.bs-callout+.bs-callout {
@@ -171,6 +175,7 @@
 				<li>Top mentioned account chart</li>
 				<li>Top influencer chart</li>
 				<li>Top hashtag chart</li>
+				<li>Miscellaneous</li>
 			</ol>
 		</div>
 		<div class="row">&nbsp;</div>
@@ -550,7 +555,7 @@
 					<svg viewBox="200 0 1560 1100" width="960" height="800">
 						<g class="legend" transform="translate(910,580)"><g>
 						<circle cy="-25.980762113533157" r="550"></circle>
-						<text y="35.961524" x="-100" dy="1.3em">
+						<text y="35.961524" x="-170" dy="1.3em" style="font-size:3rem !important;">
 							<?php
 								echo $query_array['tracker']." after cleansing ".$assoc_res_count['semua']." tweets";
 
@@ -558,7 +563,7 @@
 						</text>
 						</g><g>
 						<circle cy="74.742346" r="450"></circle>
-						<text y="-602.484692" x="-90" dy="7.3em">
+						<text y="-662.484692" x="-120" dy="7.3em" style="font-size:3rem !important;">
 							<?php
 								echo "All ".$query_array['tracker']." ".$assoc_res_count_all['semua']." tweets";
 							?>
